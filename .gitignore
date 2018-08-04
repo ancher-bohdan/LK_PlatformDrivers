@@ -3,6 +3,5 @@
 Module.symvers
 modules.order
 platform_test.c
-platform_test_dts.c
 send_data.c
 send_data2.c
