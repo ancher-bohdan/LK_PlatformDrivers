@@ -4,5 +4,11 @@ Module.symvers
 modules.order
 platform_test.c
 platform_test_dts.c
-send_data.c
 send_data2.c
+.platform_test_dts.ko.cmd
+.platform_test_dts.mod.o.cmd
+.platform_test_dts.o.cmd
+platform_test_dts.ko
+platform_test_dts.mod.c
+platform_test_dts.mod.o
+platform_test_dts.o
