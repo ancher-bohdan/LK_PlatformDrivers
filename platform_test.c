@@ -18,12 +18,14 @@
 static dma_addr_t mem_base = 0x9f200000;
 static dma_addr_t reg_base = 0x9f201000;
 #define MEM_SIZE	(4096)
-#define REG_SIZE	(8)
+#define REG_SIZE	(12)
 #define DEVICE_POOLING_TIME_MS (500) /*500 ms*/
 /**/
 #define PLAT_IO_FLAG_REG		(0) /*Offset of flag register*/
 #define PLAT_IO_SIZE_REG		(4) /*Offset of flag register*/
+#define PLAT_IO_DATA_TX			(8) /*Offset of data tx register*/
 #define PLAT_IO_DATA_READY	(1) /*IO data ready flag */
+#define PLAT_TX_REG_FREE		(2) /*DATA TX regiser free to accept new data */
 #define MAX_DUMMY_PLAT_THREADS 1 /*Maximum amount of threads for this */
 
 
@@ -77,6 +79,15 @@ static void plat_dummy_work(struct work_struct *work)
 		status &= ~PLAT_IO_DATA_READY;
 		plat_dummy_reg_write32(my_device, PLAT_IO_FLAG_REG, status);
 
+	}
+	if(status & PLAT_TX_REG_FREE) {
+		pr_info("%s: writing process\n", __func__);
+		data = plat_dummy_reg_read32(my_device, PLAT_IO_DATA_TX);
+		plat_dummy_reg_write32(my_device, PLAT_IO_SIZE_REG, 4);
+		rmb();
+		status &= ~PLAT_TX_REG_FREE;
+		status |= PLAT_IO_DATA_READY;
+		plat_dummy_reg_write32(my_device, PLAT_IO_FLAG_REG, status);
 	}
 	queue_delayed_work(my_device->data_read_wq, &my_device->dwork, my_device->js_pool_time);
 }
